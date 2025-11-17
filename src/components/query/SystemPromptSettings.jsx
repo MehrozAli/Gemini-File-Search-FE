@@ -46,7 +46,7 @@ export function SystemPromptSettings() {
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-2">
           <Sparkles className="h-4 w-4" />
-          <span>System Prompt</span>
+          <span className="sr-only sm:not-sr-only">System Prompt</span>
           {savedPrompt && (
             <Badge variant="secondary" className="h-5 px-1.5 text-xs">
               Active

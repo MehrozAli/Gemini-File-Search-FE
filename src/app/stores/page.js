@@ -15,26 +15,26 @@ export default function StoresPage() {
 
   return (
     <div className="container py-8 space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Stores</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Stores</h1>
           <p className="text-muted-foreground mt-2">
-            Manage your file search stores
+            Create, sync and delete Gemini file search stores.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {stores && stores.length > 0 && (
             <Button
               variant="outline"
               onClick={() => setShowDeleteDialog(true)}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete All
+              <Trash2 className="h-4 w-4" />
+              Delete all
             </Button>
           )}
           <Button onClick={() => setShowCreateModal(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Store
+            <Plus className="h-4 w-4" />
+            New store
           </Button>
         </div>
       </div>

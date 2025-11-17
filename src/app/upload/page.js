@@ -21,9 +21,9 @@ function UploadPageContent() {
   return (
     <div className="container py-8 space-y-8 max-w-3xl">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Upload Files</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Upload files</h1>
         <p className="text-muted-foreground mt-2">
-          Upload documents to a store to make them searchable
+          Gemini indexes each file into the store so it can be searched
         </p>
       </div>
 
@@ -35,7 +35,7 @@ function UploadPageContent() {
         <Alert>
           <Upload className="h-4 w-4" />
           <AlertDescription>
-            No stores available. Please create a store first before uploading files.
+            No stores yet. Create a store first, then upload files to it.
           </AlertDescription>
         </Alert>
       ) : (
@@ -59,9 +59,9 @@ export default function UploadPage() {
     <Suspense fallback={
       <div className="container py-8 space-y-8 max-w-3xl">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Upload Files</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Upload files</h1>
           <p className="text-muted-foreground mt-2">
-            Upload documents to a store to make them searchable
+            Gemini indexes each file into the store so it can be searched
           </p>
         </div>
         <Card className="p-6">

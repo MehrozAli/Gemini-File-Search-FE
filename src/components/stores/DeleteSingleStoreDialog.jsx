@@ -20,10 +20,8 @@ export function DeleteSingleStoreDialog({ open, onOpenChange, onConfirm, storeNa
           <AlertDialogDescription>
             Are you sure you want to delete this store? This action cannot be undone and will
             permanently delete all files associated with this store.
-            <div className="mt-3 p-2 rounded bg-muted text-sm font-mono">
-              {storeName}
-            </div>
           </AlertDialogDescription>
+          <p className="mt-1 p-2 rounded bg-muted text-sm font-mono break-all">{storeName}</p>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>

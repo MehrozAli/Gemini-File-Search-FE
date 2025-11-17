@@ -59,14 +59,16 @@ export default function StoreDetailPage() {
     <div className="container py-8 space-y-8">
       <Card>
         <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-3">
-              <Database className="h-8 w-8 text-muted-foreground" />
-              <div>
-                <CardTitle className="text-2xl">{store.display_name}</CardTitle>
-                <CardDescription className="space-y-1 mt-2">
-                  <div className="text-sm">Store ID: {store.name}</div>
-                  <div className="text-sm">Created: {createdDate}</div>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3 min-w-0">
+              <Database className="h-8 w-8 text-primary shrink-0" aria-hidden="true" />
+              <div className="min-w-0">
+                <CardTitle>
+                  <h1 className="text-2xl font-semibold">{store.display_name}</h1>
+                </CardTitle>
+                <CardDescription className="mt-2 space-y-1 text-sm">
+                  <span className="block font-mono break-all">{store.name}</span>
+                  <span className="block">Created {createdDate}</span>
                 </CardDescription>
               </div>
             </div>

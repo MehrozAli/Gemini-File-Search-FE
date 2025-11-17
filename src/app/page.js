@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { MessageSquareText, Plus, Upload } from 'lucide-react';
 import { useStores } from '@/lib/hooks/useStores';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StoreList } from '@/components/stores/StoreList';
 import { CreateStoreModal } from '@/components/stores/CreateStoreModal';
-import { Database, Upload, Plus } from 'lucide-react';
 import { countStoresCreatedSince } from '@/lib/storeStats';
 
 export default function Home() {
@@ -14,65 +14,60 @@ export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const stats = [
-    {
-      title: 'Total Stores',
-      value: stores?.length || 0,
-      icon: Database,
-      description: 'Active file search stores',
-    },
-    {
-      title: 'Recent Activity',
-      value: countStoresCreatedSince(stores),
-      icon: Upload,
-      description: 'Stores created today',
-    },
+    { label: 'Stores', value: stores?.length ?? 0 },
+    { label: 'Created in the last 24 hours', value: countStoresCreatedSince(stores) },
   ];
 
   return (
-    <div className="container py-8 space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage your file search stores and query documents with AI
+    <div className="container py-8 sm:py-10 space-y-10">
+      <section className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-primary">Gemini file search</p>
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">Your document stores</h1>
+          <p className="text-muted-foreground max-w-xl">
+            Each store is a Gemini file search index. Upload documents to a store, then ask
+            questions and get answers with the passages they came from.
           </p>
         </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Store
-        </Button>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {stat.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold tracking-tight">Your Stores</h2>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="h-4 w-4" />
+            New store
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/upload">
+              <Upload className="h-4 w-4" />
+              Upload
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/search">
+              <MessageSquareText className="h-4 w-4" />
+              Ask
+            </Link>
+          </Button>
         </div>
-        <StoreList stores={stores} isLoading={isLoading} error={error} />
-      </div>
+      </section>
 
-      <CreateStoreModal
-        open={showCreateModal}
-        onOpenChange={setShowCreateModal}
-      />
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border bg-border sm:max-w-md">
+        {stats.map((stat) => (
+          <div key={stat.label} className="bg-card px-4 py-3">
+            <dt className="text-xs text-muted-foreground">{stat.label}</dt>
+            <dd className="font-serif text-2xl font-semibold tabular-nums">
+              {isLoading ? '–' : stat.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <section aria-labelledby="stores-heading" className="space-y-4">
+        <h2 id="stores-heading" className="text-xl font-semibold tracking-tight">
+          Stores
+        </h2>
+        <StoreList stores={stores} isLoading={isLoading} error={error} />
+      </section>
+
+      <CreateStoreModal open={showCreateModal} onOpenChange={setShowCreateModal} />
     </div>
   );
 }

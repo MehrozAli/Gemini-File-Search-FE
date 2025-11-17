@@ -15,7 +15,7 @@ import { getErrorMessage } from '@/lib/utils/errorHandler';
 
 const markdownComponents = {
   table: (props) => (
-    <div className="overflow-x-auto my-6">
+    <div className="overflow-x-auto my-3 rounded-md border border-border">
       <table {...props} />
     </div>
   ),
@@ -39,7 +39,7 @@ function UserBubble({ children }) {
       <div className="max-w-[85%] rounded-2xl px-4 py-3 bg-primary text-primary-foreground">
         <p className="text-sm whitespace-pre-wrap leading-relaxed">{children}</p>
       </div>
-      <div className="shrink-0 w-9 h-9 rounded-full bg-primary flex items-center justify-center" aria-hidden="true">
+      <div className="shrink-0 w-9 h-9 rounded-full bg-primary hidden sm:flex items-center justify-center" aria-hidden="true">
         <User className="h-5 w-5 text-primary-foreground" />
       </div>
     </div>
@@ -49,10 +49,10 @@ function UserBubble({ children }) {
 function ModelBubble({ children }) {
   return (
     <div className="flex gap-3 justify-start">
-      <div className="shrink-0 w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center" aria-hidden="true">
+      <div className="shrink-0 w-9 h-9 rounded-full bg-primary/10 hidden sm:flex items-center justify-center" aria-hidden="true">
         <Bot className="h-5 w-5 text-primary" />
       </div>
-      <div className="flex-1 min-w-0 max-w-[85%] rounded-2xl px-4 py-3 bg-muted">{children}</div>
+      <div className="flex-1 min-w-0 sm:max-w-[85%] rounded-2xl px-4 py-3 bg-card border">{children}</div>
     </div>
   );
 }

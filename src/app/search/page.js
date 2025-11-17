@@ -28,8 +28,9 @@ function SearchPageContent() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-5xl mx-auto">
+      <h1 className="sr-only">Ask a store</h1>
       {stores?.length > 0 && (
-        <div className="shrink-0 border-b p-4">
+        <div className="shrink-0 border-b px-4 py-3 sm:max-w-md">
           <StorePicker
             id="search-store"
             label="Search in store"
@@ -51,7 +52,7 @@ function SearchPageContent() {
           <Alert className="max-w-md">
             <Search className="h-4 w-4" />
             <AlertDescription>
-              No stores available. Please create a store and upload files first.
+              No stores yet. Create a store and upload files before asking questions.
             </AlertDescription>
           </Alert>
         </div>
@@ -59,7 +60,7 @@ function SearchPageContent() {
         <div className="flex-1 flex items-center justify-center p-4">
           <Card className="p-8 max-w-md">
             <div className="text-center text-muted-foreground">
-              <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <Search className="h-12 w-12 mx-auto mb-4 opacity-50" aria-hidden="true" />
               <p>Please select a store to search</p>
             </div>
           </Card>
@@ -95,7 +96,7 @@ export default function SearchPage() {
     <Suspense fallback={
       <div className="container py-8 space-y-8 max-w-4xl">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Search Documents</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Ask a store</h1>
           <p className="text-muted-foreground mt-2">
             Query your uploaded documents with AI-powered search
           </p>
