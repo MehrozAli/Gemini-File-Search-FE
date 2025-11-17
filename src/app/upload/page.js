@@ -4,14 +4,7 @@ import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useStores } from '@/lib/hooks/useStores';
 import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { StorePicker } from '@/components/stores/StorePicker';
 import { FileUploader } from '@/components/upload/FileUploader';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -46,7 +39,16 @@ function UploadPageContent() {
           </AlertDescription>
         </Alert>
       ) : (
-      <></>
+        <Card className="p-6 space-y-6">
+          <StorePicker
+            id="upload-store"
+            label="Upload to store"
+            stores={stores}
+            value={selectedStore}
+            onChange={setChosenStore}
+          />
+          {selectedStore && <FileUploader storeName={selectedStore} />}
+        </Card>
       )}
     </div>
   );

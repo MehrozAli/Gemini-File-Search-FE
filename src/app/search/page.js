@@ -5,14 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useStores } from '@/lib/hooks/useStores';
 import { useQuery as useQueryStore } from '@/lib/hooks/useQueryStore';
 import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { StorePicker } from '@/components/stores/StorePicker';
 import { QueryInput } from '@/components/query/QueryInput';
 import { QueryResults } from '@/components/query/QueryResults';
 // import { SourcesList } from '@/components/query/SourcesList';
@@ -56,12 +49,28 @@ function SearchPageContent() {
     }
   };
 
+  const handleStoreChange = (storeName) => {
+    setChosenStore(storeName);
+    setConversationHistory([]);
+  };
+
   const handleClearConversation = () => {
     setConversationHistory([]);
   };
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-5xl mx-auto">
+      {stores?.length > 0 && (
+        <div className="shrink-0 border-b p-4">
+          <StorePicker
+            id="search-store"
+            label="Search in store"
+            stores={stores}
+            value={selectedStore}
+            onChange={handleStoreChange}
+          />
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center">
