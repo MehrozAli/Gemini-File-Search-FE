@@ -81,11 +81,11 @@ export function FileUploader({ storeName, onSuccess }) {
               <p className="text-sm font-medium">
                 Drag and drop your file here, or
               </p>
-              <label className="text-sm text-primary hover:underline cursor-pointer">
+              <label className="text-sm text-primary underline-offset-4 hover:underline cursor-pointer has-[:focus-visible]:underline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ring rounded-sm">
                 browse files
                 <input
                   type="file"
-                  className="hidden"
+                  className="sr-only"
                   onChange={handleFileSelect}
                   disabled={isPending}
                 />
@@ -119,6 +119,7 @@ export function FileUploader({ storeName, onSuccess }) {
                 variant="ghost"
                 size="icon"
                 onClick={handleRemove}
+                aria-label={`Remove ${selectedFile.name}`}
                 className="ml-2"
               >
                 <X className="h-4 w-4" />

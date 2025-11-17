@@ -1,35 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Send, Loader2, RotateCcw } from 'lucide-react';
 
 export function QueryInput({ onSubmit, isLoading, storeName, onClearChat, hasMessages }) {
   const [query, setQuery] = useState('');
+  const hintId = useId();
+  const canSubmit = Boolean(query.trim() && storeName && !isLoading);
+
+  const submit = () => {
+    if (!canSubmit) return;
+    onSubmit(query);
+    setQuery('');
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (query.trim() && storeName) {
-      onSubmit(query);
-      setQuery(''); // Clear input after submission
-    }
+    submit();
   };
 
   const handleKeyDown = (e) => {
-    // Submit on Enter, allow Shift+Enter for new lines
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (query.trim() && storeName && !isLoading) {
-        onSubmit(query);
-        setQuery(''); // Clear input after submission
-      }
+      submit();
     }
   };
 
   return (
     <div className="space-y-2">
-      {/* Clear chat button - only show when there are messages */}
       {hasMessages && (
         <div className="flex justify-end">
           <Button
@@ -44,11 +44,13 @@ export function QueryInput({ onSubmit, isLoading, storeName, onClearChat, hasMes
           </Button>
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit} className="flex items-end gap-2">
         <div className="flex-1">
           <Textarea
-            placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
+            aria-label="Your question"
+            aria-describedby={hintId}
+            placeholder="Ask about the documents in this store…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -56,11 +58,15 @@ export function QueryInput({ onSubmit, isLoading, storeName, onClearChat, hasMes
             className="min-h-[60px] max-h-[200px] resize-none rounded-2xl"
             rows={1}
           />
+          <p id={hintId} className="sr-only">
+            Press Enter to send, Shift+Enter for a new line.
+          </p>
         </div>
         <Button
           type="submit"
-          disabled={!query.trim() || isLoading || !storeName}
+          disabled={!canSubmit}
           size="icon"
+          aria-label="Send question"
           className="h-[60px] w-[60px] rounded-full shrink-0"
         >
           {isLoading ? (

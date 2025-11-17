@@ -63,6 +63,7 @@ export function StoreCard({ store }) {
                 className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={() => setShowDeleteDialog(true)}
                 disabled={isCardDisabled}
+                aria-label={`Delete ${store.display_name}`}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
