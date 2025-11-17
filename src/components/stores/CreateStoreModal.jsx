@@ -36,10 +36,13 @@ export function CreateStoreModal({ open, onOpenChange }) {
     },
   });
 
-  const onSubmit = async (data) => {
-    await createStore.mutateAsync(data);
-    form.reset();
-    onOpenChange(false);
+  const onSubmit = (data) => {
+    createStore.mutate(data, {
+      onSuccess: () => {
+        form.reset();
+        onOpenChange(false);
+      },
+    });
   };
 
   return (

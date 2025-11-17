@@ -12,6 +12,7 @@ import { FileUploader } from '@/components/upload/FileUploader';
 import { QueryInput } from '@/components/query/QueryInput';
 import { QueryResults } from '@/components/query/QueryResults';
 import { Database } from 'lucide-react';
+import { formatDate } from '@/lib/format';
 
 export default function StoreDetailPage() {
   const params = useParams();
@@ -46,7 +47,7 @@ export default function StoreDetailPage() {
     );
   }
 
-  const createdDate = new Date(store.create_time).toLocaleString('en-US', {
+  const createdDate = formatDate(store.create_time, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

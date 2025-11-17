@@ -15,9 +15,10 @@ import { useDeleteAllStores } from '@/lib/hooks/useStores';
 export function DeleteStoreDialog({ open, onOpenChange }) {
   const deleteAllStores = useDeleteAllStores();
 
-  const handleDelete = async () => {
-    await deleteAllStores.mutateAsync();
-    onOpenChange(false);
+  const handleDelete = (event) => {
+    // Keep the dialog open until the request finishes so a failure is visible.
+    event.preventDefault();
+    deleteAllStores.mutate(undefined, { onSuccess: () => onOpenChange(false) });
   };
 
   return (

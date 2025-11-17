@@ -1,14 +1,10 @@
 import apiClient from './client';
 
 /**
- * Query a store
- * @param {string} storeName - Store name
- * @param {Object} data - Query data
- * @param {string} data.prompt - Search prompt
- * @param {string} [data.system_prompt] - Optional system prompt
- * @param {string} [data.model] - Optional model selection
- * @param {Array} [data.conversation_history] - Optional conversation history
- * @returns {Promise} Query results
+ * @param {string} storeName
+ * @param {{ prompt: string, system_prompt?: string, model?: string,
+ *           conversation_history?: { role: 'user' | 'model', content: string }[] }} data
+ * @returns {Promise<{ text: string, sources?: { title?: string, uri?: string }[] }>}
  */
 export const queryStore = async (storeName, data) => {
   const response = await apiClient.post(`/api/stores/${storeName}/query`, data);

@@ -9,43 +9,35 @@ import { Database, Search, Trash2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useDeleteStore, useSyncStore } from '@/lib/hooks/useStores';
 import { DeleteSingleStoreDialog } from './DeleteSingleStoreDialog';
+import { formatDate } from '@/lib/format';
 
-export function StoreCard({ store, isSyncing, onSyncStart, onSyncEnd }) {
+export function StoreCard({ store }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const deleteStore = useDeleteStore();
   const syncStore = useSyncStore();
 
-  const createdDate = new Date(store.create_time).toLocaleDateString('en-US', {
+  const createdDate = formatDate(store.create_time, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
 
-  // URL encode the store name to handle special characters like '/'
+  // Gemini store names contain a '/', e.g. "fileSearchStores/abc123".
   const encodedStoreName = encodeURIComponent(store.name);
 
-  const handleDelete = async () => {
-    await deleteStore.mutateAsync(store.name);
-    setShowDeleteDialog(false);
+  const handleDelete = () => {
+    deleteStore.mutate(store.name, { onSuccess: () => setShowDeleteDialog(false) });
   };
 
-  const handleSync = async () => {
-    if (onSyncStart) {
-      onSyncStart(store.name);
-    }
-    try {
-      await syncStore.mutateAsync({
-        storeName: store.name,
-        displayName: store.display_name || '',
-        documentName: '', // Empty as per API spec
-      });
-    } finally {
-      if (onSyncEnd) {
-        onSyncEnd(store.name);
-      }
-    }
+  const handleSync = () => {
+    syncStore.mutate({
+      storeName: store.name,
+      displayName: store.display_name || '',
+      documentName: '',
+    });
   };
 
+  const isSyncing = syncStore.isPending;
   const isCardDisabled = isSyncing || deleteStore.isPending;
 
   return (

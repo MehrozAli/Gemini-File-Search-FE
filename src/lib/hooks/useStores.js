@@ -6,102 +6,67 @@ import { QUERY_KEYS } from '../config';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils/errorHandler';
 
-/**
- * Hook to fetch all stores
- */
 export function useStores() {
   return useQuery({
     queryKey: QUERY_KEYS.stores,
     queryFn: getStores,
-    staleTime: 30000, // 30 seconds
+    staleTime: 30_000,
   });
 }
 
-/**
- * Hook to create a new store
- */
+function useStoreMutation({ mutationFn, success, failure }) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stores });
+      toast.success(success);
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, failure));
+    },
+  });
+}
+
 export function useCreateStore() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
+  return useStoreMutation({
     mutationFn: createStore,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stores });
-      toast.success('Store created successfully!');
-    },
-    onError: (error) => {
-      const message = getErrorMessage(error, 'Failed to create store');
-      toast.error(message);
-    },
+    success: 'Store created successfully!',
+    failure: 'Failed to create store',
   });
 }
 
-/**
- * Hook to delete a single store
- */
 export function useDeleteStore() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
+  return useStoreMutation({
     mutationFn: deleteStore,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stores });
-      toast.success('Store deleted successfully!');
-    },
-    onError: (error) => {
-      const message = getErrorMessage(error, 'Failed to delete store');
-      toast.error(message);
-    },
+    success: 'Store deleted successfully!',
+    failure: 'Failed to delete store',
   });
 }
 
-/**
- * Hook to delete all stores
- */
 export function useDeleteAllStores() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
+  return useStoreMutation({
     mutationFn: deleteAllStores,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stores });
-      toast.success('All stores deleted successfully!');
-    },
-    onError: (error) => {
-      const message = getErrorMessage(error, 'Failed to delete stores');
-      toast.error(message);
-    },
+    success: 'All stores deleted successfully!',
+    failure: 'Failed to delete stores',
   });
 }
 
-/**
- * Hook to sync a store
- */
 export function useSyncStore() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ storeName, displayName, documentName }) => 
+  return useStoreMutation({
+    mutationFn: ({ storeName, displayName, documentName }) =>
       syncStore(storeName, displayName, documentName),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stores });
-      toast.success('Store synced successfully!');
-    },
-    onError: (error) => {
-      const message = getErrorMessage(error, 'Failed to sync store');
-      toast.error(message);
-    },
+    success: 'Store synced successfully!',
+    failure: 'Failed to sync store',
   });
 }
 
-/**
- * Hook to check API health
- */
 export function useHealth() {
   return useQuery({
     queryKey: QUERY_KEYS.health,
     queryFn: checkHealth,
-    staleTime: 60000, // 1 minute
+    staleTime: 60_000,
     retry: 3,
   });
 }
