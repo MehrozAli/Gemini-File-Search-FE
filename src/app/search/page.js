@@ -3,13 +3,11 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useStores } from '@/lib/hooks/useStores';
-import { useQuery as useQueryStore } from '@/lib/hooks/useQueryStore';
+import { useStoreConversation } from '@/lib/hooks/useQueryStore';
 import { Card } from '@/components/ui/card';
 import { StorePicker } from '@/components/stores/StorePicker';
 import { QueryInput } from '@/components/query/QueryInput';
 import { QueryResults } from '@/components/query/QueryResults';
-// import { SourcesList } from '@/components/query/SourcesList';
-import { getSavedSystemPrompt } from '@/lib/systemPrompt';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search } from 'lucide-react';
@@ -19,43 +17,13 @@ function SearchPageContent() {
   const preselectedStore = searchParams.get('store');
   const { data: stores, isLoading } = useStores();
   const [chosenStore, setChosenStore] = useState(null);
-  const [conversationHistory, setConversationHistory] = useState([]);
-  const { mutate: query, data: queryData, isPending: isQuerying, error: queryError } = useQueryStore();
   const selectedStore =
     chosenStore ?? (stores?.some((s) => s.name === preselectedStore) ? preselectedStore : '');
-
-  const handleQuery = (prompt) => {
-    if (selectedStore) {
-      const systemPrompt = getSavedSystemPrompt();
-      
-      // Add user message to history
-      const userMessage = { role: 'user', content: prompt };
-      
-      // Prepare history for backend (last 10 messages to keep context manageable)
-      const recentHistory = conversationHistory.slice(-10);
-      
-      query({ 
-        storeName: selectedStore, 
-        prompt,
-        ...(systemPrompt && { system_prompt: systemPrompt }),
-        conversation_history: recentHistory
-      }, {
-        onSuccess: (data) => {
-          // Add both user message and model response to conversation history
-          const modelMessage = { role: 'model', content: data.text };
-          setConversationHistory(prev => [...prev, userMessage, modelMessage]);
-        }
-      });
-    }
-  };
+  const conversation = useStoreConversation(selectedStore);
 
   const handleStoreChange = (storeName) => {
     setChosenStore(storeName);
-    setConversationHistory([]);
-  };
-
-  const handleClearConversation = () => {
-    setConversationHistory([]);
+    conversation.clearConversation();
   };
 
   return (
@@ -98,32 +66,22 @@ function SearchPageContent() {
         </div>
       ) : (
         <>
-          {/* Chat Messages Area */}
           <div className="flex-1 overflow-hidden">
             <QueryResults
-              data={queryData}
-              isLoading={isQuerying}
-              error={queryError}
-              conversationHistory={conversationHistory}
-              onClearConversation={handleClearConversation}
+              messages={conversation.messages}
+              pendingPrompt={conversation.pendingPrompt}
+              isLoading={conversation.isPending}
+              error={conversation.error}
             />
           </div>
 
-          {/* Sources - Collapsible above input */}
-          {/* {queryData?.sources && queryData.sources.length > 0 && (
-            <div className="flex-shrink-0 border-t bg-muted/30 max-h-32 overflow-y-auto">
-              <SourcesList sources={queryData.sources} />
-            </div>
-          )} */}
-
-          {/* Input at Bottom - Fixed */}
           <div className="shrink-0 border-t bg-background p-4">
             <QueryInput
-              onSubmit={handleQuery}
-              isLoading={isQuerying}
+              onSubmit={conversation.sendPrompt}
+              isLoading={conversation.isPending}
               storeName={selectedStore}
-              onClearChat={handleClearConversation}
-              hasMessages={conversationHistory.length > 0}
+              onClearChat={conversation.clearConversation}
+              hasMessages={conversation.messages.length > 0}
             />
           </div>
         </>

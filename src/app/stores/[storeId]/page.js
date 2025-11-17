@@ -3,31 +3,24 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useStores } from '@/lib/hooks/useStores';
-import { useQuery as useQueryStore } from '@/lib/hooks/useQueryStore';
+import { useStoreConversation } from '@/lib/hooks/useQueryStore';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FileUploader } from '@/components/upload/FileUploader';
 import { QueryInput } from '@/components/query/QueryInput';
 import { QueryResults } from '@/components/query/QueryResults';
-import { SourcesList } from '@/components/query/SourcesList';
 import { Database } from 'lucide-react';
 
 export default function StoreDetailPage() {
   const params = useParams();
-  // Decode the URL-encoded store ID
   const storeId = decodeURIComponent(params.storeId);
   const { data: stores, isLoading: storesLoading } = useStores();
-  const { mutate: query, data: queryData, isPending: isQuerying, error: queryError } = useQueryStore();
+  const conversation = useStoreConversation(storeId);
   const [activeTab, setActiveTab] = useState('upload');
 
   const store = stores?.find((s) => s.name === storeId);
-
-  const handleQuery = (prompt) => {
-    query({ storeName: storeId, prompt });
-  };
 
   if (storesLoading) {
     return (
@@ -106,22 +99,21 @@ export default function StoreDetailPage() {
               Ask questions about your uploaded documents
             </p>
           </div>
-          
-          <QueryInput
-            onSubmit={handleQuery}
-            isLoading={isQuerying}
-            storeName={storeId}
-          />
 
           <QueryResults
-            data={queryData}
-            isLoading={isQuerying}
-            error={queryError}
+            messages={conversation.messages}
+            pendingPrompt={conversation.pendingPrompt}
+            isLoading={conversation.isPending}
+            error={conversation.error}
           />
 
-          {queryData?.sources && queryData.sources.length > 0 && (
-            <SourcesList sources={queryData.sources} />
-          )}
+          <QueryInput
+            onSubmit={conversation.sendPrompt}
+            isLoading={conversation.isPending}
+            storeName={storeId}
+            onClearChat={conversation.clearConversation}
+            hasMessages={conversation.messages.length > 0}
+          />
         </TabsContent>
       </Tabs>
     </div>
