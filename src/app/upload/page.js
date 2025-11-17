@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useStores } from '@/lib/hooks/useStores';
 import { Card } from '@/components/ui/card';
@@ -19,17 +19,11 @@ import { Upload } from 'lucide-react';
 
 function UploadPageContent() {
   const searchParams = useSearchParams();
-  const preselectedStoreParam = searchParams.get('store');
-  // Decode the URL-encoded store name if present
-  const preselectedStore = preselectedStoreParam ? decodeURIComponent(preselectedStoreParam) : null;
+  const preselectedStore = searchParams.get('store');
   const { data: stores, isLoading } = useStores();
-  const [selectedStore, setSelectedStore] = useState('');
-
-  useEffect(() => {
-    if (preselectedStore && stores?.find((s) => s.name === preselectedStore)) {
-      setSelectedStore(preselectedStore);
-    }
-  }, [preselectedStore, stores]);
+  const [chosenStore, setChosenStore] = useState(null);
+  const selectedStore =
+    chosenStore ?? (stores?.some((s) => s.name === preselectedStore) ? preselectedStore : '');
 
   return (
     <div className="container py-8 space-y-8 max-w-3xl">

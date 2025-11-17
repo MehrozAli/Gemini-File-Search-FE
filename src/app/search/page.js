@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useStores } from '@/lib/hooks/useStores';
 import { useQuery as useQueryStore } from '@/lib/hooks/useQueryStore';
@@ -16,31 +16,20 @@ import {
 import { QueryInput } from '@/components/query/QueryInput';
 import { QueryResults } from '@/components/query/QueryResults';
 // import { SourcesList } from '@/components/query/SourcesList';
-import { getSavedSystemPrompt } from '@/components/query/SystemPromptSettings';
+import { getSavedSystemPrompt } from '@/lib/systemPrompt';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search } from 'lucide-react';
 
 function SearchPageContent() {
   const searchParams = useSearchParams();
-  const preselectedStoreParam = searchParams.get('store');
-  // Decode the URL-encoded store name if present
-  const preselectedStore = preselectedStoreParam ? decodeURIComponent(preselectedStoreParam) : null;
+  const preselectedStore = searchParams.get('store');
   const { data: stores, isLoading } = useStores();
-  const [selectedStore, setSelectedStore] = useState('');
+  const [chosenStore, setChosenStore] = useState(null);
   const [conversationHistory, setConversationHistory] = useState([]);
   const { mutate: query, data: queryData, isPending: isQuerying, error: queryError } = useQueryStore();
-
-  useEffect(() => {
-    if (preselectedStore && stores?.find((s) => s.name === preselectedStore)) {
-      setSelectedStore(preselectedStore);
-    }
-  }, [preselectedStore, stores]);
-
-  // Reset conversation when store changes
-  useEffect(() => {
-    setConversationHistory([]);
-  }, [selectedStore]);
+  const selectedStore =
+    chosenStore ?? (stores?.some((s) => s.name === preselectedStore) ? preselectedStore : '');
 
   const handleQuery = (prompt) => {
     if (selectedStore) {

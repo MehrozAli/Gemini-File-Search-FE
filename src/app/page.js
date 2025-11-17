@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { StoreList } from '@/components/stores/StoreList';
 import { CreateStoreModal } from '@/components/stores/CreateStoreModal';
-import { Database, Upload, Search, Plus } from 'lucide-react';
+import { Database, Upload, Plus } from 'lucide-react';
+import { countStoresCreatedSince } from '@/lib/storeStats';
 
 export default function Home() {
   const { data: stores, isLoading, error } = useStores();
@@ -21,11 +22,7 @@ export default function Home() {
     },
     {
       title: 'Recent Activity',
-      value: stores?.filter(s => {
-        const created = new Date(s.create_time);
-        const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        return created > dayAgo;
-      }).length || 0,
+      value: countStoresCreatedSince(stores),
       icon: Upload,
       description: 'Stores created today',
     },
