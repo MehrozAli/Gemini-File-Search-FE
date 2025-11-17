@@ -9,11 +9,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import rehypeHighlight from 'rehype-highlight';
-import rehypeRaw from 'rehype-raw';
 import { CheckCircle2, Copy, Trash2, MessageSquare, Bot, User, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState, useEffect, useRef } from 'react';
-import 'highlight.js/styles/github-dark.css';
 
 export function QueryResults({ data, isLoading, error, conversationHistory = [], onClearConversation }) {
   const [copied, setCopied] = useState(false);
@@ -59,7 +57,7 @@ export function QueryResults({ data, isLoading, error, conversationHistory = [],
   const renderMarkdown = (text) => (
     <ReactMarkdown 
       remarkPlugins={[remarkGfm, remarkBreaks]}
-      rehypePlugins={[rehypeHighlight, rehypeRaw]}
+      rehypePlugins={[rehypeHighlight]}
       components={{
         // Custom table rendering for better styling
         table: ({ node, ...props }) => (
