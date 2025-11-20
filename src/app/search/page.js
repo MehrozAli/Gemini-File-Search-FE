@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useStores } from '@/lib/hooks/useStores';
 import { useQuery as useQueryStore } from '@/lib/hooks/useQueryStore';
@@ -21,7 +21,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search } from 'lucide-react';
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const preselectedStoreParam = searchParams.get('store');
   // Decode the URL-encoded store name if present
@@ -123,5 +123,25 @@ export default function SearchPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-8 space-y-8 max-w-4xl">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Search Documents</h1>
+          <p className="text-muted-foreground mt-2">
+            Query your uploaded documents with AI-powered search
+          </p>
+        </div>
+        <Card className="p-6">
+          <Skeleton className="h-10 w-full" />
+        </Card>
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
   );
 }
