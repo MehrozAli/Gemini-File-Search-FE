@@ -7,9 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeRaw from 'rehype-raw';
 import { CheckCircle2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import 'highlight.js/styles/github-dark.css';
 
 export function QueryResults({ data, isLoading, error }) {
   const [copied, setCopied] = useState(false);
@@ -82,8 +86,54 @@ export function QueryResults({ data, isLoading, error }) {
 
         <Separator />
 
-        <div className="prose prose-sm max-w-none dark:prose-invert">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <div className="markdown-content prose prose-sm max-w-none dark:prose-invert">
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm, remarkBreaks]}
+            rehypePlugins={[rehypeHighlight, rehypeRaw]}
+            components={{
+              // Custom table rendering for better styling
+              table: ({ node, ...props }) => (
+                <div className="overflow-x-auto my-6">
+                  <table {...props} />
+                </div>
+              ),
+              // Enhanced code block rendering
+              code: ({ node, inline, className, children, ...props }) => {
+                const match = /language-(\w+)/.exec(className || '');
+                return !inline ? (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                ) : (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                );
+              },
+              // Enhanced blockquote rendering
+              blockquote: ({ node, children, ...props }) => (
+                <blockquote {...props}>
+                  {children}
+                </blockquote>
+              ),
+              // Enhanced heading rendering with proper IDs
+              h1: ({ node, children, ...props }) => (
+                <h1 id={String(children).toLowerCase().replace(/\s+/g, '-')} {...props}>
+                  {children}
+                </h1>
+              ),
+              h2: ({ node, children, ...props }) => (
+                <h2 id={String(children).toLowerCase().replace(/\s+/g, '-')} {...props}>
+                  {children}
+                </h2>
+              ),
+              h3: ({ node, children, ...props }) => (
+                <h3 id={String(children).toLowerCase().replace(/\s+/g, '-')} {...props}>
+                  {children}
+                </h3>
+              ),
+            }}
+          >
             {data.text}
           </ReactMarkdown>
         </div>

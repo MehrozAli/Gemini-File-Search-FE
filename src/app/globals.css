@@ -120,3 +120,228 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Enhanced Markdown Styles */
+@layer components {
+  .markdown-content {
+    @apply leading-7;
+  }
+
+  /* Headings */
+  .markdown-content h1 {
+    @apply text-3xl font-bold tracking-tight mt-8 mb-4 pb-2 border-b border-border;
+  }
+
+  .markdown-content h2 {
+    @apply text-2xl font-semibold tracking-tight mt-6 mb-3 pb-2 border-b border-border;
+  }
+
+  .markdown-content h3 {
+    @apply text-xl font-semibold mt-6 mb-3;
+  }
+
+  .markdown-content h4 {
+    @apply text-lg font-semibold mt-4 mb-2;
+  }
+
+  .markdown-content h5 {
+    @apply text-base font-semibold mt-4 mb-2;
+  }
+
+  .markdown-content h6 {
+    @apply text-sm font-semibold mt-4 mb-2 text-muted-foreground;
+  }
+
+  /* First heading has less top margin */
+  .markdown-content > h1:first-child,
+  .markdown-content > h2:first-child,
+  .markdown-content > h3:first-child {
+    @apply mt-0;
+  }
+
+  /* Paragraphs */
+  .markdown-content p {
+    @apply my-4 leading-7;
+  }
+
+  /* Lists */
+  .markdown-content ul {
+    @apply my-4 ml-6 list-disc space-y-2;
+  }
+
+  .markdown-content ol {
+    @apply my-4 ml-6 list-decimal space-y-2;
+  }
+
+  .markdown-content li {
+    @apply leading-7;
+  }
+
+  .markdown-content li > p {
+    @apply my-2;
+  }
+
+  /* Nested lists */
+  .markdown-content ul ul,
+  .markdown-content ol ul,
+  .markdown-content ul ol,
+  .markdown-content ol ol {
+    @apply my-2;
+  }
+
+  /* Blockquotes */
+  .markdown-content blockquote {
+    @apply border-l-4 border-primary pl-4 my-4 italic text-muted-foreground bg-muted/30 py-2;
+  }
+
+  /* Code blocks */
+  .markdown-content pre {
+    @apply bg-muted rounded-lg p-4 my-4 overflow-x-auto border border-border;
+  }
+
+  .markdown-content pre code {
+    @apply bg-transparent text-sm font-mono leading-relaxed p-0;
+  }
+
+  .markdown-content code {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono border border-border;
+  }
+
+  /* Inline code should not have padding in pre blocks */
+  .markdown-content pre code {
+    @apply border-0 px-0 py-0;
+  }
+
+  /* Tables */
+  .markdown-content table {
+    @apply w-full my-6 border-collapse;
+  }
+
+  .markdown-content thead {
+    @apply border-b-2 border-border;
+  }
+
+  .markdown-content th {
+    @apply px-4 py-3 text-left font-semibold bg-muted/50;
+  }
+
+  .markdown-content td {
+    @apply px-4 py-3 border-t border-border;
+  }
+
+  .markdown-content tr {
+    @apply border-b border-border;
+  }
+
+  .markdown-content tbody tr:hover {
+    @apply bg-muted/30 transition-colors;
+  }
+
+  /* Horizontal rules */
+  .markdown-content hr {
+    @apply my-8 border-border;
+  }
+
+  /* Links */
+  .markdown-content a {
+    @apply text-primary underline underline-offset-4 hover:text-primary/80 transition-colors;
+  }
+
+  /* Strong and emphasis */
+  .markdown-content strong {
+    @apply font-bold text-foreground;
+  }
+
+  .markdown-content em {
+    @apply italic;
+  }
+
+  /* Images */
+  .markdown-content img {
+    @apply rounded-lg my-4 max-w-full border border-border;
+  }
+
+  /* Task lists */
+  .markdown-content input[type="checkbox"] {
+    @apply mr-2;
+  }
+
+  /* Dividers between sections */
+  .markdown-content > hr {
+    @apply my-6 border-t-2;
+  }
+
+  /* Code syntax highlighting */
+  .markdown-content .hljs {
+    @apply bg-muted;
+  }
+
+  .markdown-content .hljs-comment,
+  .markdown-content .hljs-quote {
+    @apply text-muted-foreground italic;
+  }
+
+  .markdown-content .hljs-keyword,
+  .markdown-content .hljs-selector-tag,
+  .markdown-content .hljs-subst {
+    @apply text-primary font-semibold;
+  }
+
+  .markdown-content .hljs-number,
+  .markdown-content .hljs-literal,
+  .markdown-content .hljs-variable,
+  .markdown-content .hljs-template-variable,
+  .markdown-content .hljs-tag .hljs-attr {
+    @apply text-chart-1;
+  }
+
+  .markdown-content .hljs-string,
+  .markdown-content .hljs-doctag {
+    @apply text-chart-2;
+  }
+
+  .markdown-content .hljs-title,
+  .markdown-content .hljs-section,
+  .markdown-content .hljs-selector-id {
+    @apply text-chart-3 font-semibold;
+  }
+
+  .markdown-content .hljs-type,
+  .markdown-content .hljs-class .hljs-title {
+    @apply text-chart-4;
+  }
+
+  .markdown-content .hljs-tag,
+  .markdown-content .hljs-name,
+  .markdown-content .hljs-attribute {
+    @apply text-chart-5;
+  }
+
+  .markdown-content .hljs-regexp,
+  .markdown-content .hljs-link {
+    @apply text-destructive;
+  }
+
+  .markdown-content .hljs-symbol,
+  .markdown-content .hljs-bullet {
+    @apply text-primary;
+  }
+
+  .markdown-content .hljs-built_in,
+  .markdown-content .hljs-builtin-name {
+    @apply text-accent-foreground;
+  }
+
+  /* Definition lists (if used) */
+  .markdown-content dl {
+    @apply my-4;
+  }
+
+  .markdown-content dt {
+    @apply font-semibold mt-4;
+  }
+
+  .markdown-content dd {
+    @apply ml-6 mt-1 text-muted-foreground;
+  }
+}
