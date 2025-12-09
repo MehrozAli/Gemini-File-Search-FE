@@ -17,7 +17,17 @@ export const getStores = async () => {
  * @returns {Promise} Created store
  */
 export const createStore = async (data) => {
-  const response = await apiClient.post('/api/stores', data);
+  // Create a custom axios instance without timeout for store creation
+  const axios = require('axios');
+  const createClient = axios.create({
+    baseURL: apiClient.defaults.baseURL,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    timeout: 0, // No timeout for store creation operations
+  });
+  
+  const response = await createClient.post('/api/stores', data);
   return response.data;
 };
 
@@ -37,6 +47,32 @@ export const deleteAllStores = async () => {
  */
 export const deleteStore = async (storeName) => {
   const response = await apiClient.delete(`/api/stores/${storeName}`);
+  return response.data;
+};
+
+/**
+ * Sync a specific store
+ * @param {string} storeName - Store name (using store.name field)
+ * @param {string} displayName - Display name for the store
+ * @param {string} documentName - Document name (optional)
+ * @returns {Promise} Sync result
+ */
+export const syncStore = async (storeName, displayName = '', documentName = '') => {
+  // Create a custom axios instance without timeout for sync operations
+  const axios = require('axios');
+  const syncClient = axios.create({
+    baseURL: apiClient.defaults.baseURL,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    timeout: 0, // No timeout for sync operations
+  });
+  
+  // Send required body fields
+  const response = await syncClient.post(`/api/stores/${storeName}/sync`, {
+    document_name: documentName,
+    display_name: displayName,
+  });
   return response.data;
 };
 

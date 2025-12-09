@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { uploadFile } from '../api/files';
 import { QUERY_KEYS } from '../config';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/errorHandler';
 
 /**
  * Hook to upload files to a store
@@ -22,7 +23,7 @@ export function useUpload() {
       toast.success('File uploaded successfully!');
     },
     onError: (error) => {
-      const message = error.response?.data?.detail || 'Failed to upload file';
+      const message = getErrorMessage(error, 'Failed to upload file');
       toast.error(message);
       setUploadProgress(0);
     },

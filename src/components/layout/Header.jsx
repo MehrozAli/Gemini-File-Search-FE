@@ -2,14 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, Upload, Search, Home } from 'lucide-react';
+import { Database, Search, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'Stores', href: '/stores', icon: Database },
-  { name: 'Upload', href: '/upload', icon: Upload },
-  { name: 'Search', href: '/search', icon: Search },
 ];
 
 export function Header() {

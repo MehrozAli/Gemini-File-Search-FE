@@ -3,6 +3,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { queryStore } from '../api/queries';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/errorHandler';
 
 /**
  * Hook to query a store
@@ -16,7 +17,7 @@ export function useQuery() {
         ...(model && { model })
       }),
     onError: (error) => {
-      const message = error.response?.data?.detail || 'Query failed';
+      const message = getErrorMessage(error, 'Query failed');
       toast.error(message);
     },
   });
