@@ -1,9 +1,10 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getStores, createStore, deleteAllStores, deleteStore, checkHealth } from '../api/stores';
+import { getStores, createStore, deleteAllStores, deleteStore, syncStore, checkHealth } from '../api/stores';
 import { QUERY_KEYS } from '../config';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/errorHandler';
 
 /**
  * Hook to fetch all stores
@@ -29,7 +30,7 @@ export function useCreateStore() {
       toast.success('Store created successfully!');
     },
     onError: (error) => {
-      const message = error.response?.data?.detail || 'Failed to create store';
+      const message = getErrorMessage(error, 'Failed to create store');
       toast.error(message);
     },
   });
@@ -48,7 +49,7 @@ export function useDeleteStore() {
       toast.success('Store deleted successfully!');
     },
     onError: (error) => {
-      const message = error.response?.data?.detail || 'Failed to delete store';
+      const message = getErrorMessage(error, 'Failed to delete store');
       toast.error(message);
     },
   });
@@ -67,7 +68,27 @@ export function useDeleteAllStores() {
       toast.success('All stores deleted successfully!');
     },
     onError: (error) => {
-      const message = error.response?.data?.detail || 'Failed to delete stores';
+      const message = getErrorMessage(error, 'Failed to delete stores');
+      toast.error(message);
+    },
+  });
+}
+
+/**
+ * Hook to sync a store
+ */
+export function useSyncStore() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ storeName, displayName, documentName }) => 
+      syncStore(storeName, displayName, documentName),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stores });
+      toast.success('Store synced successfully!');
+    },
+    onError: (error) => {
+      const message = getErrorMessage(error, 'Failed to sync store');
       toast.error(message);
     },
   });

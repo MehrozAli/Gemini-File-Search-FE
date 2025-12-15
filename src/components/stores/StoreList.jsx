@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { StoreCard } from './StoreCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Database } from 'lucide-react';
 
 export function StoreList({ stores, isLoading, error }) {
+  const [syncingStores, setSyncingStores] = useState(new Set());
   if (isLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -38,10 +40,28 @@ export function StoreList({ stores, isLoading, error }) {
     );
   }
 
+  const handleSyncStart = (storeName) => {
+    setSyncingStores(prev => new Set(prev).add(storeName));
+  };
+
+  const handleSyncEnd = (storeName) => {
+    setSyncingStores(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(storeName);
+      return newSet;
+    });
+  };
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {stores.map((store) => (
-        <StoreCard key={store.name} store={store} />
+        <StoreCard
+          key={store.name}
+          store={store}
+          isSyncing={syncingStores.has(store.name)}
+          onSyncStart={handleSyncStart}
+          onSyncEnd={handleSyncEnd}
+        />
       ))}
     </div>
   );

@@ -52,41 +52,7 @@ function UploadPageContent() {
           </AlertDescription>
         </Alert>
       ) : (
-        <>
-          <Card className="p-6">
-            <div className="space-y-2">
-              <Label htmlFor="store-select">Select Store</Label>
-              <Select value={selectedStore} onValueChange={setSelectedStore}>
-                <SelectTrigger id="store-select">
-                  <SelectValue placeholder="Choose a store..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {stores.map((store) => (
-                    <SelectItem key={store.name} value={store.name}>
-                      {store.display_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedStore && (
-                <p className="text-xs text-muted-foreground">
-                  Store ID: {selectedStore}
-                </p>
-              )}
-            </div>
-          </Card>
-
-          {!selectedStore ? (
-            <Card className="p-8">
-              <div className="text-center text-muted-foreground">
-                <Upload className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Please select a store to upload files</p>
-              </div>
-            </Card>
-          ) : (
-            <FileUploader storeName={selectedStore} />
-          )}
-        </>
+      <></>
       )}
     </div>
   );

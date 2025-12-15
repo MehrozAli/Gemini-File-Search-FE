@@ -4,14 +4,16 @@ import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Database, Upload, Search, Trash2 } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { Database, Search, Trash2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
-import { useDeleteStore } from '@/lib/hooks/useStores';
+import { useDeleteStore, useSyncStore } from '@/lib/hooks/useStores';
 import { DeleteSingleStoreDialog } from './DeleteSingleStoreDialog';
 
-export function StoreCard({ store }) {
+export function StoreCard({ store, isSyncing, onSyncStart, onSyncEnd }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const deleteStore = useDeleteStore();
+  const syncStore = useSyncStore();
 
   const createdDate = new Date(store.create_time).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -27,9 +29,28 @@ export function StoreCard({ store }) {
     setShowDeleteDialog(false);
   };
 
+  const handleSync = async () => {
+    if (onSyncStart) {
+      onSyncStart(store.name);
+    }
+    try {
+      await syncStore.mutateAsync({
+        storeName: store.name,
+        displayName: store.display_name || '',
+        documentName: '', // Empty as per API spec
+      });
+    } finally {
+      if (onSyncEnd) {
+        onSyncEnd(store.name);
+      }
+    }
+  };
+
+  const isCardDisabled = isSyncing || deleteStore.isPending;
+
   return (
     <>
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className={`hover:shadow-md transition-all ${isCardDisabled ? 'opacity-60 pointer-events-none' : ''}`}>
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-2">
@@ -37,12 +58,19 @@ export function StoreCard({ store }) {
               <CardTitle className="text-lg">{store.display_name}</CardTitle>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">{store.state}</Badge>
+              {isSyncing && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Spinner className="h-3 w-3" />
+                  Syncing...
+                </Badge>
+              )}
+              {!isSyncing && <Badge variant="outline">{store.state}</Badge>}
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={() => setShowDeleteDialog(true)}
+                disabled={isCardDisabled}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -54,19 +82,20 @@ export function StoreCard({ store }) {
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/stores/${encodedStoreName}`}>
-              <Database className="h-4 w-4 mr-2" />
-              View
-            </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSync}
+            disabled={isCardDisabled}
+          >
+            {isSyncing ? (
+              <Spinner className="h-4 w-4 mr-2" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Sync
           </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/upload?store=${encodedStoreName}`}>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm" disabled={isCardDisabled}>
             <Link href={`/search?store=${encodedStoreName}`}>
               <Search className="h-4 w-4 mr-2" />
               Search

@@ -69,7 +69,7 @@ function SearchPageContent() {
         </Alert>
       ) : (
         <>
-          <Card className="p-6">
+          {/* <Card className="p-6">
             <div className="space-y-2">
               <Label htmlFor="store-select">Select Store</Label>
               <Select value={selectedStore} onValueChange={setSelectedStore}>
@@ -90,7 +90,7 @@ function SearchPageContent() {
                 </p>
               )}
             </div>
-          </Card>
+          </Card> */}
 
           {!selectedStore ? (
             <Card className="p-8">
