@@ -10,11 +10,12 @@ import { getErrorMessage } from '../utils/errorHandler';
  */
 export function useQuery() {
   return useMutation({
-    mutationFn: ({ storeName, prompt, system_prompt, model }) => 
+    mutationFn: ({ storeName, prompt, system_prompt, model, conversation_history }) => 
       queryStore(storeName, { 
         prompt, 
         ...(system_prompt && { system_prompt }),
-        ...(model && { model })
+        ...(model && { model }),
+        ...(conversation_history && conversation_history.length > 0 && { conversation_history })
       }),
     onError: (error) => {
       const message = getErrorMessage(error, 'Query failed');
