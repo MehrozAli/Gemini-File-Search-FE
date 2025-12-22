@@ -28,6 +28,7 @@ function SearchPageContent() {
   const preselectedStore = preselectedStoreParam ? decodeURIComponent(preselectedStoreParam) : null;
   const { data: stores, isLoading } = useStores();
   const [selectedStore, setSelectedStore] = useState('');
+  const [conversationHistory, setConversationHistory] = useState([]);
   const { mutate: query, data: queryData, isPending: isQuerying, error: queryError } = useQueryStore();
 
   useEffect(() => {
@@ -36,15 +37,38 @@ function SearchPageContent() {
     }
   }, [preselectedStore, stores]);
 
+  // Reset conversation when store changes
+  useEffect(() => {
+    setConversationHistory([]);
+  }, [selectedStore]);
+
   const handleQuery = (prompt) => {
     if (selectedStore) {
       const systemPrompt = getSavedSystemPrompt();
+      
+      // Add user message to history
+      const userMessage = { role: 'user', content: prompt };
+      
+      // Prepare history for backend (last 10 messages to keep context manageable)
+      const recentHistory = conversationHistory.slice(-10);
+      
       query({ 
         storeName: selectedStore, 
         prompt,
-        ...(systemPrompt && { system_prompt: systemPrompt })
+        ...(systemPrompt && { system_prompt: systemPrompt }),
+        conversation_history: recentHistory
+      }, {
+        onSuccess: (data) => {
+          // Add both user message and model response to conversation history
+          const modelMessage = { role: 'model', content: data.text };
+          setConversationHistory(prev => [...prev, userMessage, modelMessage]);
+        }
       });
     }
+  };
+
+  const handleClearConversation = () => {
+    setConversationHistory([]);
   };
 
   return (
@@ -113,6 +137,8 @@ function SearchPageContent() {
                 data={queryData}
                 isLoading={isQuerying}
                 error={queryError}
+                conversationHistory={conversationHistory}
+                onClearConversation={handleClearConversation}
               />
 
               {queryData?.sources && queryData.sources.length > 0 && (
