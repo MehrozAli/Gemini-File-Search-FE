@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/select';
 import { QueryInput } from '@/components/query/QueryInput';
 import { QueryResults } from '@/components/query/QueryResults';
-import { SourcesList } from '@/components/query/SourcesList';
-import { SystemPromptSettings, getSavedSystemPrompt } from '@/components/query/SystemPromptSettings';
+// import { SourcesList } from '@/components/query/SourcesList';
+import { getSavedSystemPrompt } from '@/components/query/SystemPromptSettings';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search } from 'lucide-react';
@@ -72,80 +72,62 @@ function SearchPageContent() {
   };
 
   return (
-    <div className="container py-8 space-y-8 max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Search Documents</h1>
-        <p className="text-muted-foreground mt-2">
-          Query your uploaded documents with AI-powered search
-        </p>
-      </div>
+    <div className="flex flex-col h-[calc(100vh-4rem)] max-w-5xl mx-auto">
 
       {isLoading ? (
-        <Card className="p-6">
-          <Skeleton className="h-10 w-full" />
-        </Card>
+        <div className="flex-1 flex items-center justify-center">
+          <Card className="p-6 w-full max-w-md">
+            <Skeleton className="h-10 w-full" />
+          </Card>
+        </div>
       ) : !stores || stores.length === 0 ? (
-        <Alert>
-          <Search className="h-4 w-4" />
-          <AlertDescription>
-            No stores available. Please create a store and upload files first.
-          </AlertDescription>
-        </Alert>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <Alert className="max-w-md">
+            <Search className="h-4 w-4" />
+            <AlertDescription>
+              No stores available. Please create a store and upload files first.
+            </AlertDescription>
+          </Alert>
+        </div>
+      ) : !selectedStore ? (
+        <div className="flex-1 flex items-center justify-center p-4">
+          <Card className="p-8 max-w-md">
+            <div className="text-center text-muted-foreground">
+              <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Please select a store to search</p>
+            </div>
+          </Card>
+        </div>
       ) : (
         <>
-          {/* <Card className="p-6">
-            <div className="space-y-2">
-              <Label htmlFor="store-select">Select Store</Label>
-              <Select value={selectedStore} onValueChange={setSelectedStore}>
-                <SelectTrigger id="store-select">
-                  <SelectValue placeholder="Choose a store..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {stores.map((store) => (
-                    <SelectItem key={store.name} value={store.name}>
-                      {store.display_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedStore && (
-                <p className="text-xs text-muted-foreground">
-                  Store ID: {selectedStore}
-                </p>
-              )}
+          {/* Chat Messages Area */}
+          <div className="flex-1 overflow-hidden">
+            <QueryResults
+              data={queryData}
+              isLoading={isQuerying}
+              error={queryError}
+              conversationHistory={conversationHistory}
+              onClearConversation={handleClearConversation}
+            />
+          </div>
+
+          {/* Sources - Collapsible above input */}
+          {/* {queryData?.sources && queryData.sources.length > 0 && (
+            <div className="flex-shrink-0 border-t bg-muted/30 max-h-32 overflow-y-auto">
+              <SourcesList sources={queryData.sources} />
             </div>
-          </Card> */}
+          )} */}
 
-          {!selectedStore ? (
-            <Card className="p-8">
-              <div className="text-center text-muted-foreground">
-                <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Please select a store to search</p>
-              </div>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              <SystemPromptSettings />
-              
-              <QueryInput
-                onSubmit={handleQuery}
-                isLoading={isQuerying}
-                storeName={selectedStore}
-              />
-
-              <QueryResults
-                data={queryData}
-                isLoading={isQuerying}
-                error={queryError}
-                conversationHistory={conversationHistory}
-                onClearConversation={handleClearConversation}
-              />
-
-              {queryData?.sources && queryData.sources.length > 0 && (
-                <SourcesList sources={queryData.sources} />
-              )}
-            </div>
-          )}
+          {/* Input at Bottom - Fixed */}
+          <div className="shrink-0 border-t bg-background p-4">
+            <QueryInput
+              onSubmit={handleQuery}
+              isLoading={isQuerying}
+              storeName={selectedStore}
+              onClearChat={handleClearConversation}
+              hasMessages={conversationHistory.length > 0}
+            />
+          </div>
         </>
       )}
     </div>

@@ -2,14 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, Search, Home } from 'lucide-react';
+import { Database, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SystemPromptSettings } from '@/components/query/SystemPromptSettings';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
 ];
 
-export function Header() {
+export function Header({ onClearChat, showChatActions }) {
   const pathname = usePathname();
 
   return (
@@ -20,7 +21,7 @@ export function Header() {
           <span className="font-semibold text-lg">File Search</span>
         </div>
         
-        <nav className="flex items-center space-x-1">
+        <nav className="flex items-center space-x-1 flex-1">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -40,6 +41,11 @@ export function Header() {
             );
           })}
         </nav>
+
+        {/* Right side actions */}
+        <div className="flex items-center gap-2">
+          <SystemPromptSettings />
+        </div>
       </div>
     </header>
   );

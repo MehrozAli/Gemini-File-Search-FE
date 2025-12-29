@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -15,52 +14,44 @@ export function SourcesList({ sources }) {
   }
 
   return (
-    <Card>
-      {/* <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="cursor-pointer" asChild>
-          <CollapsibleTrigger className="w-full">
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-2">
-                <CardTitle className="text-base">Sources</CardTitle>
-                <Badge variant="secondary">{sources.length}</Badge>
-              </div>
-              {isOpen ? (
-                <ChevronUp className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
-            </div>
-          </CollapsibleTrigger>
-        </CardHeader>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="p-3">
+      <CollapsibleTrigger asChild>
+        <Button variant="ghost" className="w-full justify-between h-auto p-2">
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Sources</span>
+            <Badge variant="secondary" className="h-5 text-xs">{sources.length}</Badge>
+          </div>
+          {isOpen ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
+        </Button>
+      </CollapsibleTrigger>
 
-        <CollapsibleContent>
-          <CardContent className="space-y-3">
-            {sources.map((source, index) => (
-              <div
-                key={index}
-                className="flex items-start space-x-3 p-3 rounded-lg border bg-muted/50"
-              >
-                <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
-                <div className="flex-1 min-w-0 space-y-1">
-                  <p className="text-sm font-medium">
-                    {source.title || `Source ${index + 1}`}
+      <CollapsibleContent className="pt-2">
+        <div className="space-y-2">
+          {sources.map((source, index) => (
+            <div
+              key={index}
+              className="flex items-start gap-2 p-2 rounded-lg border bg-background text-xs"
+            >
+              <FileText className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">
+                  {source.title || `Source ${index + 1}`}
+                </p>
+                {source.uri && (
+                  <p className="text-muted-foreground truncate">
+                    {source.uri}
                   </p>
-                  {source.uri && (
-                    <p className="text-xs text-muted-foreground truncate">
-                      {source.uri}
-                    </p>
-                  )}
-                  {source.chunk_id && (
-                    <Badge variant="outline" className="text-xs">
-                      Chunk: {source.chunk_id}
-                    </Badge>
-                  )}
-                </div>
+                )}
               </div>
-            ))}
-          </CardContent>
-        </CollapsibleContent>
-      </Collapsible> */}
-    </Card>
+            </div>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
