@@ -10,13 +10,21 @@ import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
-import { CheckCircle2, Copy, Trash2, MessageSquare, Bot, User } from 'lucide-react';
+import { CheckCircle2, Copy, Trash2, MessageSquare, Bot, User, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import 'highlight.js/styles/github-dark.css';
 
 export function QueryResults({ data, isLoading, error, conversationHistory = [], onClearConversation }) {
   const [copied, setCopied] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll to bottom when conversation history changes
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [conversationHistory]);
 
   const handleCopy = (text) => {
     if (text) {
@@ -34,38 +42,17 @@ export function QueryResults({ data, isLoading, error, conversationHistory = [],
     }
   };
 
-  if (isLoading) {
+  // Show empty state if no conversation
+  if (!data && conversationHistory.length === 0 && !isLoading) {
     return (
-      <Card className="p-6 space-y-4">
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-5/6" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-2/3" />
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertDescription>
-          {error.response?.data?.detail || 'Failed to get results. Please try again.'}
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  // If no conversation history and no current data, show empty state
-  if (!data && conversationHistory.length === 0) {
-    return (
-      <Card className="p-8">
-        <div className="text-center text-muted-foreground">
-          <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>Enter a question above to search your documents.</p>
-          <p className="text-xs mt-2">Your conversation will be maintained for context.</p>
+      <div className="h-full flex items-center justify-center p-8">
+        <div className="text-center text-muted-foreground max-w-md">
+          <MessageSquare className="h-16 w-16 mx-auto mb-4 opacity-50" />
+          <h3 className="text-lg font-semibold mb-2">Start a Conversation</h3>
+          <p className="text-sm">Ask questions about your documents and I&apos;ll help you find answers.</p>
+          <p className="text-xs mt-2 opacity-70">Your conversation context is maintained for better results.</p>
         </div>
-      </Card>
+      </div>
     );
   }
 
@@ -122,34 +109,19 @@ export function QueryResults({ data, isLoading, error, conversationHistory = [],
   );
 
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            <h3 className="font-semibold">Conversation</h3>
-            {conversationHistory.length > 0 && (
-              <span className="text-xs text-muted-foreground">
-                ({conversationHistory.length} messages)
-              </span>
-            )}
-          </div>
-          {conversationHistory.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleClearConversation}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Clear
-            </Button>
+    <div className="h-full flex flex-col">
+      {/* Scrollable messages area */}
+      <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="space-y-6 max-w-3xl mx-auto">
+          {/* Error message if exists */}
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>
+                {error.response?.data?.detail || 'Failed to get results. Please try again.'}
+              </AlertDescription>
+            </Alert>
           )}
-        </div>
 
-        <Separator />
-
-        {/* Display conversation history */}
-        <div className="space-y-4 max-h-[600px] overflow-y-auto">
           {conversationHistory.map((message, index) => (
             <div
               key={index}
@@ -158,34 +130,34 @@ export function QueryResults({ data, isLoading, error, conversationHistory = [],
               }`}
             >
               {message.role === 'model' && (
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-primary" />
+                <div className="shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bot className="h-5 w-5 text-primary" />
                   </div>
                 </div>
               )}
               <div
-                className={`flex-1 max-w-[80%] rounded-lg p-4 ${
+                className={`flex-1 max-w-[85%] rounded-2xl px-4 py-3 ${
                   message.role === 'user'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted'
                 }`}
               >
                 {message.role === 'user' ? (
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                 ) : (
                   <div className="markdown-content prose prose-sm max-w-none dark:prose-invert">
                     {renderMarkdown(message.content)}
                   </div>
                 )}
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs opacity-70">
-                    {message.role === 'user' ? 'You' : 'AI'}
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-current/10">
+                  <span className="text-xs opacity-60">
+                    {message.role === 'user' ? 'You' : 'AI Assistant'}
                   </span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 px-2"
+                    className="h-6 px-2 opacity-60 hover:opacity-100"
                     onClick={() => handleCopy(message.content)}
                   >
                     {copied ? (
@@ -197,9 +169,9 @@ export function QueryResults({ data, isLoading, error, conversationHistory = [],
                 </div>
               </div>
               {message.role === 'user' && (
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                    <User className="h-4 w-4 text-primary-foreground" />
+                <div className="shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
+                    <User className="h-5 w-5 text-primary-foreground" />
                   </div>
                 </div>
               )}
@@ -209,29 +181,28 @@ export function QueryResults({ data, isLoading, error, conversationHistory = [],
           {/* Show loading state for current query */}
           {isLoading && (
             <div className="flex gap-3 justify-start">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Bot className="h-4 w-4 text-primary animate-pulse" />
+              <div className="shrink-0">
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Bot className="h-5 w-5 text-primary animate-pulse" />
                 </div>
               </div>
-              <div className="flex-1 max-w-[80%] rounded-lg p-4 bg-muted">
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-5/6" />
+              <div className="flex-1 max-w-[85%] rounded-2xl px-4 py-3 bg-muted">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Thinking...</span>
+                </div>
+                <Skeleton className="h-3 w-3/4 mb-2" />
+                <Skeleton className="h-3 w-full mb-2" />
+                <Skeleton className="h-3 w-5/6" />
               </div>
             </div>
           )}
+          
+          {/* Invisible element at the bottom for scrolling */}
+          <div ref={messagesEndRef} />
         </div>
-
-        {data?.sources && data.sources.length > 0 && (
-          <>
-            <Separator />
-            <div className="text-xs text-muted-foreground">
-              Last response based on {data.sources.length} source{data.sources.length !== 1 ? 's' : ''}
-            </div>
-          </>
-        )}
       </div>
-    </Card>
+    </div>
   );
 }
+

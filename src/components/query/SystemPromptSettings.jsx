@@ -1,13 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Save, Settings, ChevronDown, ChevronUp } from 'lucide-react';
+import { Save, Settings, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 
 const SYSTEM_PROMPT_KEY = 'fileSearch_systemPrompt';
 
@@ -29,6 +36,7 @@ export function SystemPromptSettings() {
     localStorage.setItem(SYSTEM_PROMPT_KEY, systemPrompt);
     setIsSaved(true);
     toast.success('System prompt saved!');
+    setIsOpen(false);
   };
 
   const handleClear = () => {
@@ -44,73 +52,69 @@ export function SystemPromptSettings() {
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card>
-        <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Settings className="h-5 w-5" />
-                <CardTitle className="text-base">System Prompt</CardTitle>
-                {isSaved && !isOpen && (
-                  <span className="text-xs text-muted-foreground">✓ Active</span>
-                )}
-              </div>
-              {isOpen ? (
-                <ChevronUp className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
-            </div>
-            {!isOpen && (
-              <CardDescription className="text-xs">
-                Click to {isSaved ? 'edit' : 'set'} custom system prompt
-              </CardDescription>
-            )}
-          </CardHeader>
-        </CollapsibleTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm" className="gap-2">
+          <Sparkles className="h-4 w-4" />
+          <span>System Prompt</span>
+          {isSaved && (
+            <Badge variant="secondary" className="h-5 px-1.5 text-xs">
+              Active
+            </Badge>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[525px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            System Prompt
+          </DialogTitle>
+          <DialogDescription>
+            Set a custom system prompt to guide the AI&apos;s behavior and responses for all queries.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="system-prompt">Custom Prompt</Label>
+            <Textarea
+              id="system-prompt"
+              placeholder="You are a helpful assistant that summarizes documents concisely..."
+              value={systemPrompt}
+              onChange={(e) => handleChange(e.target.value)}
+              className="min-h-[150px] resize-none"
+            />
+            <p className="text-xs text-muted-foreground">
+              {systemPrompt.length} characters
+            </p>
+          </div>
 
-        <CollapsibleContent>
-          <CardContent className="space-y-4 pt-0">
-            <CardDescription className="text-sm">
-              Set a custom system prompt that will be used with all queries. This helps guide the AI's behavior and responses.
-            </CardDescription>
-
-            <div className="space-y-2">
-              <Label htmlFor="system-prompt">Prompt</Label>
-              <Textarea
-                id="system-prompt"
-                placeholder="You are a helpful assistant that summarizes documents concisely..."
-                value={systemPrompt}
-                onChange={(e) => handleChange(e.target.value)}
-                className="min-h-[100px] resize-none"
-              />
-              <p className="text-xs text-muted-foreground">
-                {systemPrompt.length} characters
-              </p>
-            </div>
-
-            <div className="flex gap-2">
-              <Button onClick={handleSave} disabled={isSaved && systemPrompt === localStorage.getItem(SYSTEM_PROMPT_KEY)}>
-                <Save className="h-4 w-4 mr-2" />
-                {isSaved ? 'Saved' : 'Save'}
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleSave} 
+              disabled={isSaved && systemPrompt === localStorage.getItem(SYSTEM_PROMPT_KEY)}
+              className="flex-1"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaved ? 'Saved' : 'Save Prompt'}
+            </Button>
+            {systemPrompt && (
+              <Button variant="outline" onClick={handleClear}>
+                Clear
               </Button>
-              {systemPrompt && (
-                <Button variant="outline" onClick={handleClear}>
-                  Clear
-                </Button>
-              )}
-            </div>
-
-            {isSaved && (
-              <p className="text-xs text-muted-foreground">
-                ✓ This prompt will be included with all your queries
-              </p>
             )}
-          </CardContent>
-        </CollapsibleContent>
-      </Card>
-    </Collapsible>
+          </div>
+
+          {isSaved && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 p-3 rounded-md">
+              <Badge variant="secondary" className="h-5">✓</Badge>
+              This prompt will be included with all your queries
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
